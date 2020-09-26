@@ -1,9 +1,9 @@
 $taketwo = Import-Csv C:\Powershell\Users.csv
 $taketwo.Count
 $taketwo | Measure-Object mailboxsizegb -Sum |Select -exp Sum
-($taketwo |? {$_.emailAddress -cne $_.userPrincipalName}).count; ($take2 |? {$_.emailAddress -ne $_.UserPrincipalName}).count
+($taketwo |? {$_.emailAddress -cne $_.userPrincipalName}).count
 $taketwo |? Site -eq 'NYC' |Measure-Object mailboxsizegb -Sum |Select -exp Sum
 ($taketwo |? AccountType -eq 'Employee' |? {[int]$_.MailboxSizeGB -gt 10}).Count
-$taketwo |? {$_.emailAddress -match '@domain2.com$' -and $_.Site -eq 'NYC'} |Sort MailboxSizeGB -Descending | fl mailboxsizegb,Site
+$taketwo |? {$_.emailAddress -match '@domain2.com$' -and $_.Site -eq 'NYC'} |Sort MailboxSizeGB -Descending
 ($taketwo |? {$_.emailAddress -match '@domain2.com$' -and $_.Site -eq 'NYC'} |Sort MailboxSizeGB -Descending |Select @{N='quirky';E={$_.UserPrincipalName -replace '@domain2.com$'}}).quirky -join ' '
 $taketwo |Group Site |Select @{N='Site';E={$_.Name}}, @{N='TotalUserCount';E={$_.Count}}, @{N='EmployeeCount';E={@($_.group |? AccountType -eq 'Employee').Count}}, @{N='ContractorCount';E={@($_.group |? AccountType -eq 'Contractor').Count}}, @{N='TotalMailboxSizeGB';E={($_.group.MailboxSizeGB |Measure -Sum).Sum}}, @{N='AverageMailboxSizeGB';E={[Math]::Round(($_.group.MailboxSizeGB |Measure -Average).Average,1)}} |Export-Csv -Path "$Env:HOMEPATH\Desktop\Users_Sites.csv" -NoTypeInformation
